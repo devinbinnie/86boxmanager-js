@@ -1,10 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import {execFileSync} from 'child_process';
 
 import {app, BrowserWindow, dialog, ipcMain, IpcMainInvokeEvent} from 'electron';
-import log from 'electron-log';
 
+import {configure86Box, start86Box} from 'main/86box';
 import ManagerSettings from 'main/config/settings';
 import {
     GET_CONFIG,
@@ -16,6 +15,7 @@ import {
     CONFIGURE_VM,
     START_VM,
 } from 'main/constants';
+
 import {Settings, VM} from 'types/config';
 
 function createWindow() {
@@ -53,12 +53,12 @@ app.whenReady().then(() => {
     })
 
     ipcMain.handle(CONFIGURE_VM, (event: IpcMainInvokeEvent, vm: VM) => {
-        execFileSync(path.join(ManagerSettings.settings?.exePath!, '86Box.exe'), ['--settings', '--vmpath', vm.path]);
+        configure86Box(ManagerSettings.settings?.exePath!, vm.path);
         return true;
     });
 
     ipcMain.handle(START_VM, (event: IpcMainInvokeEvent, vm: VM) => {
-        execFileSync(path.join(ManagerSettings.settings?.exePath!, '86Box.exe'), ['--vmpath', vm.path]);
+        start86Box(ManagerSettings.settings?.exePath!, vm.path);
         return true;
     });
 
