@@ -7,6 +7,13 @@ declare global {
             getConfig: () => Promise<Settings>;
             openExePathDialog: () => Promise<string>;
             openCfgPathDialog: () => Promise<string>;
+            addVM: (vm: VM) => Promise<boolean>;
+            configureVM: (vm: VM) => Promise<boolean>;
+            startVM: (vm: VM) => Promise<boolean>;
+            getVMs: () => Promise<VM[]>;
+        },
+        path: {
+            join: (...paths: string[]) => string;
         }
     }
 }

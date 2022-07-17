@@ -1,6 +1,9 @@
+import fs from 'fs';
 import path from 'path';
+import {execFileSync} from 'child_process';
 
 import {app, BrowserWindow, dialog, ipcMain, IpcMainInvokeEvent} from 'electron';
+import log from 'electron-log';
 
 import ManagerSettings from 'main/config/settings';
 import {
@@ -8,8 +11,12 @@ import {
     SET_CONFIG,
     OPEN_CFG_PATH_DIALOG,
     OPEN_EXE_PATH_DIALOG,
+    ADD_VM,
+    GET_VMS,
+    CONFIGURE_VM,
+    START_VM,
 } from 'main/constants';
-import {Settings} from 'types/config';
+import {Settings, VM} from 'types/config';
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -33,6 +40,26 @@ app.whenReady().then(() => {
 
     ipcMain.handle(SET_CONFIG, (event: IpcMainInvokeEvent, config: Settings) => {
         return ManagerSettings.setConfig(config);
+    });
+
+    ipcMain.handle(ADD_VM, (event: IpcMainInvokeEvent, vm: VM) => {
+        vm.path = path.join(ManagerSettings.settings?.cfgPath!, vm.name);
+        fs.mkdirSync(vm.path, {recursive: true});
+        return ManagerSettings.addVM(vm);
+    });
+
+    ipcMain.handle(GET_VMS, () => {
+        return ManagerSettings.settings?.vms;
+    })
+
+    ipcMain.handle(CONFIGURE_VM, (event: IpcMainInvokeEvent, vm: VM) => {
+        execFileSync(path.join(ManagerSettings.settings?.exePath!, '86Box.exe'), ['--settings', '--vmpath', vm.path]);
+        return true;
+    });
+
+    ipcMain.handle(START_VM, (event: IpcMainInvokeEvent, vm: VM) => {
+        execFileSync(path.join(ManagerSettings.settings?.exePath!, '86Box.exe'), ['--vmpath', vm.path]);
+        return true;
     });
 
     ipcMain.handle(OPEN_EXE_PATH_DIALOG, () => {

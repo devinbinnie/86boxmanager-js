@@ -3,6 +3,7 @@ import React from "react";
 import {Navbar, Container, Nav} from 'react-bootstrap';
 
 type Props = {
+    openAddModal: () => void;
     openConfigureModal: () => void;
 }
 
@@ -16,6 +17,11 @@ const Header = (props: Props) => {
                         onClick={props.openConfigureModal}
                     >
                         {'Configure'}
+                    </Nav.Link>
+                    <Nav.Link
+                        onClick={props.openAddModal}
+                    >
+                        {'Add'}
                     </Nav.Link>
                 </Nav>
             </Container>
