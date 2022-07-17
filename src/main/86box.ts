@@ -18,7 +18,8 @@ function get86BoxCommand(exePath: string) {
             return path.join(exePath, '86Box.app/Contents/MacOS/86Box');
         case 'linux':
             const dirs = fs.readdirSync(exePath);
-            return dirs.find((file) => file.match(/86Box-Linux(.+)\.AppImage/)) || '';
+            const filename = dirs.find((file) => file.match(/86Box-Linux(.+)\.AppImage/)) || '';
+            return path.join(exePath, filename);
         default:
             return '';
     }
