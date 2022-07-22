@@ -1,11 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Form, Modal} from "react-bootstrap";
 
-import {Settings} from 'types/config';
+import {Settings, VM} from 'types/config';
 
 type Props = {
     show: boolean;
     onHide: () => void;
+
+    editVm?: VM & {
+        index: number;
+    };
 }
 
 const VMModal = (props: Props) => {
@@ -15,20 +19,44 @@ const VMModal = (props: Props) => {
     const [desc, setDesc] = useState('');
     const [path, setPath] = useState('');
 
+    const [saving, setSaving] = useState(false);
+
     const saveVm = () => {
+        if (saving) {
+            return;
+        }
+
+        setSaving(true);
         const vm = {
             name,
             desc,
             path,
         };
-        window.mainApp.addVM(vm).then((result) => {
+
+        let func;
+        if (props.editVm) {
+            func = window.mainApp.editVM(props.editVm.index);
+        } else {
+            func = window.mainApp.addVM;
+        }
+
+        func(vm).then((result) => {
             if (!result) {
                 alert('Something went wrong saving the VM');
             } else {
                 props.onHide();
             }
+            setSaving(false);
         })
     }
+
+    useEffect(() => {
+        if (props.editVm) {
+            setName(props.editVm.name);
+            setDesc(props.editVm.desc);
+            setPath(props.editVm.path);
+        }
+    }, [props.editVm]);
 
     useEffect(() => {
         const fetchConfig = async () => {
@@ -83,7 +111,10 @@ const VMModal = (props: Props) => {
                         value={path}
                     />
                 </Form.Group>
-                <Button onClick={saveVm}>
+                <Button
+                    onClick={saveVm}
+                    disabled={saving}
+                >
                     {'Save'}
                 </Button>
             </Modal.Body>

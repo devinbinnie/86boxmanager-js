@@ -11,6 +11,8 @@ type Props = {
 const ConfigureModal = (props: Props) => {
     const [config, setConfig] = useState<Settings | undefined>();
 
+    const [saving, setSaving] = useState(false);
+
     const openExePathDialog = () => {
         if (!config) {
             return;
@@ -38,6 +40,11 @@ const ConfigureModal = (props: Props) => {
     };
 
     const saveConfig = () => {
+        if (saving) {
+            return;
+        }
+
+        setSaving(true);
         window.mainApp.setConfig(config).then((result) => {
             if (!result) {
                 alert('Something went wrong saving the config');
@@ -84,7 +91,10 @@ const ConfigureModal = (props: Props) => {
                     />
                     <Button onClick={openCfgPathDialog}>{'Browse'}</Button>
                 </Form.Group>
-                <Button onClick={saveConfig}>
+                <Button
+                    onClick={saveConfig}
+                    disabled={saving}
+                >
                     {'Save'}
                 </Button>
             </Modal.Body>

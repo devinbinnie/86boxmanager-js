@@ -17,6 +17,8 @@ const Root = () => {
 
     const [isBoxRunning, setIsBoxRunning] = useState(false);
 
+    const [editVm, setEditVm] = useState<(VM & {index: number}) | undefined>();
+
     const getVMs = () => {
         window.mainApp.getVMs().then((result) => {
             setVMs(result);
@@ -37,8 +39,13 @@ const Root = () => {
         });
     };
 
+    const editVM = (index: number, vm: VM) => {
+        setEditVm({...vm, index});
+        setIsAddModalOpen(true);
+    }
+
     const renderVMs = () => {
-        return vms.map((vm) => (
+        return vms.map((vm, index) => (
             <Card>
                 <Card.Header>
                     {vm.name}
@@ -58,6 +65,12 @@ const Root = () => {
                         disabled={isBoxRunning}
                     >
                         {'Start'}
+                    </Button>
+                    <Button
+                        onClick={() => editVM(index, vm)}
+                        disabled={isBoxRunning}
+                    >
+                        {'Edit'}
                     </Button>
                 </Card.Footer>
             </Card>
@@ -83,8 +96,10 @@ const Root = () => {
             />
             <VMModal
                 show={isAddModalOpen}
+                editVm={editVm}
                 onHide={() => {
                     setIsAddModalOpen(false);
+                    setEditVm(undefined);
                     getVMs();
                 }}
             />

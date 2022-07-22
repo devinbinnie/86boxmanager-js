@@ -11,6 +11,7 @@ import {
     OPEN_CFG_PATH_DIALOG,
     OPEN_EXE_PATH_DIALOG,
     ADD_VM,
+    EDIT_VM,
     GET_VMS,
     CONFIGURE_VM,
     START_VM,
@@ -46,6 +47,14 @@ app.whenReady().then(() => {
         vm.path = path.join(ManagerSettings.settings?.cfgPath!, vm.name);
         fs.mkdirSync(vm.path, {recursive: true});
         return ManagerSettings.addVM(vm);
+    });
+
+    ipcMain.handle(EDIT_VM, (event: IpcMainInvokeEvent, index: number, vm: VM) => {
+        const originalPath = ManagerSettings.settings?.vms[index].path;
+        vm.path = path.join(ManagerSettings.settings?.cfgPath!, vm.name);
+        fs.renameSync(originalPath!, vm.path);
+        ManagerSettings.settings?.vms.splice(index, 1, vm);
+        return ManagerSettings.writeConfig();
     });
 
     ipcMain.handle(GET_VMS, () => {
