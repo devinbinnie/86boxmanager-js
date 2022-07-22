@@ -16,6 +16,7 @@ import {
     CONFIGURE_VM,
     START_VM,
     DELETE_VM,
+    IMPORT_VM,
 } from 'main/constants';
 
 import {Settings, VM} from 'types/config';
@@ -44,9 +45,14 @@ app.whenReady().then(() => {
         return ManagerSettings.setConfig(config);
     });
 
-    ipcMain.handle(ADD_VM, (event: IpcMainInvokeEvent, vm: VM) => {
-        vm.path = path.join(ManagerSettings.settings?.cfgPath!, vm.name);
-        fs.mkdirSync(vm.path, {recursive: true});
+    ipcMain.handle(ADD_VM, (event: IpcMainInvokeEvent, vm: VM, importedVMPath?: string) => {
+        if (!fs.existsSync(vm.path)) {
+            fs.mkdirSync(vm.path, {recursive: true});
+        }
+        if (importedVMPath) {
+            fs.copyFileSync(importedVMPath, path.join(vm.path, '86box.cfg'));
+        }
+        
         return ManagerSettings.addVM(vm);
     });
 
@@ -65,6 +71,27 @@ app.whenReady().then(() => {
         }
         ManagerSettings.settings?.vms.splice(index, 1);
         return ManagerSettings.writeConfig();
+    });
+
+    ipcMain.handle(IMPORT_VM, () => {
+        const importPath = dialog.showOpenDialogSync(window, {
+            properties: ['openFile'],
+            filters: [
+                {
+                    name: '86box config',
+                    extensions: ['cfg'],
+                },
+            ],
+        });
+        if (!importPath) {
+            return '';
+        }
+        const directory = path.dirname(importPath[0]);
+        return {
+            name: path.basename(directory),
+            desc: '',
+            path: importPath[0],
+        }
     });
 
     ipcMain.handle(GET_VMS, () => {

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Form, Modal} from 'react-bootstrap';
 
 import {VM} from 'types/config';
@@ -13,6 +13,10 @@ const DeleteModal = (props: Props) => {
     const [deleteFiles, setDeleteFiles] = useState(true);
 
     const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        setDeleteFiles(true);
+    }, [props.show]);
 
     const deleteVM = () => {
         if (!props.deleteVm) {

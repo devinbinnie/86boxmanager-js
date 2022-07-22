@@ -19,7 +19,20 @@ const VMModal = (props: Props) => {
     const [desc, setDesc] = useState('');
     const [path, setPath] = useState('');
 
+    const [importedVMPath, setImportedVMPath] = useState('');
     const [saving, setSaving] = useState(false);
+
+    const importVm = () => {
+        if (saving) {
+            return;
+        }
+
+        window.mainApp.importVM().then((importedVM) => {
+            setName(importedVM.name);
+            setDesc(importedVM.desc);
+            setImportedVMPath(importedVM.path);
+        });
+    }
 
     const saveVm = () => {
         if (saving) {
@@ -37,7 +50,7 @@ const VMModal = (props: Props) => {
         if (props.editVm) {
             func = window.mainApp.editVM(props.editVm.index);
         } else {
-            func = window.mainApp.addVM;
+            func = window.mainApp.addVM(importedVMPath);
         }
 
         func(vm).then((result) => {
@@ -49,6 +62,15 @@ const VMModal = (props: Props) => {
             setSaving(false);
         })
     }
+
+    useEffect(() => {
+        if (!props.editVm) {
+            setName('');
+            setDesc('');
+            setPath('');
+            setImportedVMPath('');
+        }
+    }, [props.show]);
 
     useEffect(() => {
         if (props.editVm) {
@@ -83,7 +105,7 @@ const VMModal = (props: Props) => {
             onHide={props.onHide}
         >
             <Modal.Header>
-                {'Configure Modal'}
+                {`${props.editVm ? 'Edit' : 'Add'} Modal`}
             </Modal.Header>
             <Modal.Body>
                 <Form.Group controlId='name'>
@@ -111,13 +133,30 @@ const VMModal = (props: Props) => {
                         value={path}
                     />
                 </Form.Group>
+                {importedVMPath && 
+                    <>
+                        <br/>
+                        {`Imported VM Path: ${importedVMPath}`}
+                    </>
+                }
+            </Modal.Body>
+            <Modal.Footer>
                 <Button
                     onClick={saveVm}
                     disabled={saving}
                 >
                     {'Save'}
                 </Button>
-            </Modal.Body>
+                {!props.editVm && 
+                    <Button
+                        onClick={importVm}
+                        disabled={saving}
+                        variant='success'
+                    >
+                        {'Import'}
+                    </Button>
+                }
+            </Modal.Footer>
         </Modal>
     );
 };

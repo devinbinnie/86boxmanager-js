@@ -8,3 +8,4 @@ export const DELETE_VM = 'delete-vm';
 export const GET_VMS = 'get-vms';
 export const CONFIGURE_VM = 'configure-vm';
 export const START_VM = 'start-vm';
+export const IMPORT_VM = 'import-vm';
