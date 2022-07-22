@@ -15,6 +15,7 @@ import {
     GET_VMS,
     CONFIGURE_VM,
     START_VM,
+    DELETE_VM,
 } from 'main/constants';
 
 import {Settings, VM} from 'types/config';
@@ -54,6 +55,15 @@ app.whenReady().then(() => {
         vm.path = path.join(ManagerSettings.settings?.cfgPath!, vm.name);
         fs.renameSync(originalPath!, vm.path);
         ManagerSettings.settings?.vms.splice(index, 1, vm);
+        return ManagerSettings.writeConfig();
+    });
+    
+    ipcMain.handle(DELETE_VM, (event: IpcMainInvokeEvent, index: number, deleteFiles: boolean) => {
+        if (deleteFiles) {
+            const originalPath = ManagerSettings.settings?.vms[index].path!;
+            fs.rmSync(originalPath, {recursive: true, force: true});
+        }
+        ManagerSettings.settings?.vms.splice(index, 1);
         return ManagerSettings.writeConfig();
     });
 

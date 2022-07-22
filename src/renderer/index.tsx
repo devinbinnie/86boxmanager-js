@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import Header from 'renderer/components/Header';
 import ConfigureModal from 'renderer/components/ConfigureModal';
 import VMModal from 'renderer/components/VMModal';
+import DeleteModal from 'renderer/components/DeleteModal';
 
 import {VM} from 'types/config';
 
@@ -13,11 +14,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const Root = () => {
     const [isConfigureModalOpen, setIsConfigureModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [vms, setVMs] = useState<VM[]>([]);
 
     const [isBoxRunning, setIsBoxRunning] = useState(false);
 
     const [editVm, setEditVm] = useState<(VM & {index: number}) | undefined>();
+    const [deleteVm, setDeleteVm] = useState<(VM & {index: number}) | undefined>();
 
     const getVMs = () => {
         window.mainApp.getVMs().then((result) => {
@@ -42,6 +45,11 @@ const Root = () => {
     const editVM = (index: number, vm: VM) => {
         setEditVm({...vm, index});
         setIsAddModalOpen(true);
+    }
+
+    const deleteVM  = (index: number, vm: VM) => {
+        setDeleteVm({...vm, index});
+        setIsDeleteModalOpen(true);
     }
 
     const renderVMs = () => {
@@ -72,6 +80,13 @@ const Root = () => {
                     >
                         {'Edit'}
                     </Button>
+                    <Button
+                        onClick={() => deleteVM(index, vm)}
+                        disabled={isBoxRunning}
+                        variant='danger'
+                    >
+                        {'Delete'}
+                    </Button>
                 </Card.Footer>
             </Card>
         ));
@@ -100,6 +115,15 @@ const Root = () => {
                 onHide={() => {
                     setIsAddModalOpen(false);
                     setEditVm(undefined);
+                    getVMs();
+                }}
+            />
+            <DeleteModal
+                show={isDeleteModalOpen}
+                deleteVm={deleteVm}
+                onHide={() => {
+                    setIsDeleteModalOpen(false);
+                    setDeleteVm(undefined);
                     getVMs();
                 }}
             />

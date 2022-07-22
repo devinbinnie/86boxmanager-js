@@ -9,6 +9,7 @@ declare global {
             openCfgPathDialog: () => Promise<string>;
             addVM: (vm: VM) => Promise<boolean>;
             editVM: (index: number) => (vm: VM) => Promise<boolean>;
+            deleteVM: (index: number, deleteFiles: boolean) => Promise<boolean>;
             configureVM: (vm: VM) => Promise<boolean>;
             startVM: (vm: VM) => Promise<boolean>;
             getVMs: () => Promise<VM[]>;
