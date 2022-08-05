@@ -4,8 +4,6 @@ import path from 'path';
 import {app} from 'electron';
 import log from 'electron-log';
 
-import {configPath} from 'main/constants';
-
 import {Settings, SettingsWithVM, VM} from 'types/config';
 
 class ManagerSettings {
@@ -13,7 +11,8 @@ class ManagerSettings {
 
     init = () => {
         try {
-            const rawConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            const userDataPath = path.join(app.getPath('userData'), 'config.json');
+            const rawConfig = JSON.parse(fs.readFileSync(userDataPath, 'utf8'));
             this.settings = rawConfig as SettingsWithVM;
             return true;
         } catch (err) {

@@ -33,6 +33,9 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+    if (process.env.USER_DATA_DIR) {
+        app.setPath('userData', process.env.USER_DATA_DIR);
+    }
     ManagerSettings.init();
 
     const window = createWindow();

@@ -30,6 +30,9 @@ module.exports = merge(base, {
             chunkFilename: '[id].[contenthash].css',
         }),
     ],
+    optimization: {
+        minimize: false,
+    },
     module: {
         rules: [{
             test: /\.(js|jsx|ts|tsx)?$/,
