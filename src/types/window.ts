@@ -15,6 +15,7 @@ declare global {
             startVM: (vm: VM) => Promise<boolean>;
             getVMs: () => Promise<VM[]>;
             importVM: () => Promise<VM>;
+            verify86Box: (exePath: string) => Promise<boolean>;
         },
         path: {
             join: (...paths: string[]) => string;

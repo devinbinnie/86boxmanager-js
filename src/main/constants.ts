@@ -9,3 +9,4 @@ export const GET_VMS = 'get-vms';
 export const CONFIGURE_VM = 'configure-vm';
 export const START_VM = 'start-vm';
 export const IMPORT_VM = 'import-vm';
+export const VERIFY_86BOX_EXE = 'verify-86box-exe';

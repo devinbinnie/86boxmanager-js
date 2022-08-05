@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Form, Modal} from 'react-bootstrap';
+import {Button, Form, Modal, Alert} from 'react-bootstrap';
 
 import {Settings} from 'types/config';
 
@@ -8,10 +8,16 @@ type Props = {
     onHide: () => void;
 }
 
+enum ValidExe {
+    Valid,
+    Invalid,
+    Checking,
+}
+
 const ConfigureModal = (props: Props) => {
     const [config, setConfig] = useState<Settings | undefined>();
-
     const [saving, setSaving] = useState(false);
+    const [isValidExe, setIsValidExe] = useState<number>(ValidExe.Checking);
 
     const openExePathDialog = () => {
         if (!config) {
@@ -23,6 +29,13 @@ const ConfigureModal = (props: Props) => {
                 ...config,
                 exePath,
             });
+        });
+    };
+
+    const validateExe = (exePath: string) => {
+        setIsValidExe(ValidExe.Checking);
+        window.mainApp.verify86Box(exePath).then((result) => {
+            setIsValidExe(result ? ValidExe.Valid : ValidExe.Invalid);
         });
     };
 
@@ -54,6 +67,29 @@ const ConfigureModal = (props: Props) => {
         });
     };
 
+    const renderExeAlert = () => {
+        switch (isValidExe) {
+            case ValidExe.Valid:
+                return (
+                    <Alert variant='success'>
+                        {'Supported version of 86Box'}
+                    </Alert>
+                );
+            case ValidExe.Invalid:
+                return (
+                    <Alert variant='danger'>
+                        {'Invalid executable or unsupported version of 86Box'}
+                    </Alert>
+                );
+            case ValidExe.Checking:
+                return (
+                    <Alert variant='primary'>
+                        {'Checking if executable is valid 86Box...'}
+                    </Alert>
+                );
+        }
+    };
+
     useEffect(() => {
         const fetchConfig = async () => {
             const fetchedConfig = await window.mainApp.getConfig();
@@ -61,6 +97,14 @@ const ConfigureModal = (props: Props) => {
         };
         fetchConfig();
     }, []);
+
+    useEffect(() => {
+        if (config?.exePath) {
+            validateExe(config.exePath);
+        } else {
+            setIsValidExe(ValidExe.Invalid);
+        }
+    }, [config]);
 
     if (!config) {
         return null;
@@ -83,6 +127,7 @@ const ConfigureModal = (props: Props) => {
                     />
                     <Button onClick={openExePathDialog}>{'Browse'}</Button>
                 </Form.Group>
+                {renderExeAlert()}
                 <Form.Group controlId='cfgPath'>
                     <Form.Label>{'VM Path'}</Form.Label>
                     <Form.Control
@@ -93,7 +138,7 @@ const ConfigureModal = (props: Props) => {
                 </Form.Group>
                 <Button
                     onClick={saveConfig}
-                    disabled={saving}
+                    disabled={saving || isValidExe}
                 >
                     {'Save'}
                 </Button>

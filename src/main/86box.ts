@@ -1,25 +1,61 @@
 import fs from 'fs';
-import {execFileSync} from 'child_process';
+import {execFileSync, spawn} from 'child_process';
 import path from 'path';
+
+import log from 'electron-log';
 
 export function configure86Box(exePath: string, vmPath: string) {
     execFileSync(get86BoxCommand(exePath), ['--settings', '--vmpath', vmPath]);
 }
 
 export function start86Box(exePath: string, vmPath: string) {
+    if (!fs.existsSync(exePath)) {
+        return false;
+    }
     execFileSync(get86BoxCommand(exePath), ['--vmpath', vmPath]);
+}
+
+export async function verify86Box(exePath: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        if (!fs.existsSync(exePath)) {
+            resolve(false);
+        }
+        try {
+            const proc = spawn(get86BoxCommand(exePath), ['-?']);
+            proc.stdout.on('data', (data) => {
+                const result = `${data}`;
+                log.info('checking for EXE...', result);
+                proc.kill();
+                resolve(result.includes('--vmpath') && result.includes('--settings'));
+            });
+            setTimeout(() => {
+                proc.kill();
+                resolve(false);
+            }, 5000);
+        } catch (err) {
+            log.error('error checking EXE', err);
+            resolve(false);
+        }
+    });
 }
 
 function get86BoxCommand(exePath: string) {
     switch (process.platform) {
-        case 'win32':
-            return path.join(exePath, '86Box.exe');
         case 'darwin':
-            return path.join(exePath, '86Box.app/Contents/MacOS/86Box');
+            return path.join(exePath, 'Contents/MacOS/86Box');
+        default:
+            return exePath;
+    }
+}
+
+export function getApplicationExtension() {
+    switch (process.platform) {
+        case 'win32':
+            return 'exe';
+        case 'darwin':
+            return 'app';
         case 'linux':
-            const dirs = fs.readdirSync(exePath);
-            const filename = dirs.find((file) => file.match(/86Box-Linux(.+)\.AppImage/)) || '';
-            return path.join(exePath, filename);
+            return 'AppImage';
         default:
             return '';
     }

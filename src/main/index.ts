@@ -3,7 +3,7 @@ import path from 'path';
 
 import {app, BrowserWindow, dialog, ipcMain, IpcMainInvokeEvent} from 'electron';
 
-import {configure86Box, start86Box} from 'main/86box';
+import {configure86Box, getApplicationExtension, start86Box, verify86Box} from 'main/86box';
 import ManagerSettings from 'main/config/settings';
 import {
     GET_CONFIG,
@@ -17,6 +17,7 @@ import {
     START_VM,
     DELETE_VM,
     IMPORT_VM,
+    VERIFY_86BOX_EXE,
 } from 'main/constants';
 
 import {Settings, VM} from 'types/config';
@@ -106,19 +107,38 @@ app.whenReady().then(() => {
         return true;
     });
 
-    ipcMain.handle(START_VM, (event: IpcMainInvokeEvent, vm: VM) => {
+    ipcMain.handle(START_VM, async (event: IpcMainInvokeEvent, vm: VM) => {
+        if (!ManagerSettings.settings?.exePath) {
+            alert('Missing EXE file');
+            return false;
+        }
+        if (!await verify86Box(ManagerSettings.settings.exePath)) {
+            alert('EXE is not valid');
+            return false;
+        }
         start86Box(ManagerSettings.settings?.exePath!, vm.path);
         return true;
     });
 
     ipcMain.handle(OPEN_EXE_PATH_DIALOG, () => {
         const path = dialog.showOpenDialogSync(window, {
-            properties: ['openDirectory'],
+            properties: ['openFile'],
+            filters: [
+                {
+                    name: '86Box Application',
+                    extensions: [getApplicationExtension()],
+                },
+            ],
+            defaultPath: ManagerSettings.settings?.exePath,
         });
         if (!path) {
-            return '';
+            return ManagerSettings.settings?.exePath;
         }
         return path[0];
+    });
+
+    ipcMain.handle(VERIFY_86BOX_EXE, (event: IpcMainInvokeEvent, exePath: string) => {
+        return verify86Box(exePath);
     });
 
     ipcMain.handle(OPEN_CFG_PATH_DIALOG, () => {
@@ -126,7 +146,7 @@ app.whenReady().then(() => {
             properties: ['openDirectory'],
         });
         if (!path) {
-            return '';
+            return ManagerSettings.settings?.cfgPath;
         }
         return path[0];
     });
