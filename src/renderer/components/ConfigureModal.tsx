@@ -40,7 +40,7 @@ const ConfigureModal = (props: Props) => {
     };
 
     const saveConfig = () => {
-        if (saving) {
+        if (saving || !config) {
             return;
         }
 

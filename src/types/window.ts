@@ -1,3 +1,5 @@
+import {Settings, VM} from 'types/config';
+
 declare global {
     // eslint-disable-next-line no-unused-vars
     interface Window {
