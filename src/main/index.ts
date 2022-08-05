@@ -52,7 +52,7 @@ app.whenReady().then(() => {
         if (importedVMPath) {
             fs.copyFileSync(importedVMPath, path.join(vm.path, '86box.cfg'));
         }
-        
+
         return ManagerSettings.addVM(vm);
     });
 
@@ -63,7 +63,7 @@ app.whenReady().then(() => {
         ManagerSettings.settings?.vms.splice(index, 1, vm);
         return ManagerSettings.writeConfig();
     });
-    
+
     ipcMain.handle(DELETE_VM, (event: IpcMainInvokeEvent, index: number, deleteFiles: boolean) => {
         if (deleteFiles) {
             const originalPath = ManagerSettings.settings?.vms[index].path!;
@@ -91,12 +91,12 @@ app.whenReady().then(() => {
             name: path.basename(directory),
             desc: '',
             path: importPath[0],
-        }
+        };
     });
 
     ipcMain.handle(GET_VMS, () => {
         return ManagerSettings.settings?.vms;
-    })
+    });
 
     ipcMain.handle(CONFIGURE_VM, (event: IpcMainInvokeEvent, vm: VM) => {
         configure86Box(ManagerSettings.settings?.exePath!, vm.path);
@@ -127,17 +127,17 @@ app.whenReady().then(() => {
         }
         return path[0];
     });
-  
+
     app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
 });
-  
+
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', function () {
+app.on('window-all-closed', function() {
     if (process.platform !== 'darwin') app.quit();
 });

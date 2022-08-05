@@ -14,6 +14,9 @@ module.exports = (api) => {
                 isTSX: true,
             }],
         ],
-        plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/plugin-proposal-class-properties'],
+        plugins: [
+            '@babel/plugin-proposal-object-rest-spread',
+            '@babel/plugin-proposal-class-properties',
+        ],
     };
 };

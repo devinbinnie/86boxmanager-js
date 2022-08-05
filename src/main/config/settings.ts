@@ -4,6 +4,8 @@ import path from 'path';
 import {app} from 'electron';
 import log from 'electron-log';
 
+import {configPath} from 'main/constants';
+
 import {Settings, SettingsWithVM, VM} from 'types/config';
 
 class ManagerSettings {
@@ -11,7 +13,7 @@ class ManagerSettings {
 
     init = () => {
         try {
-            const rawConfig = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), 'config.json'), 'utf8'));
+            const rawConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
             this.settings = rawConfig as SettingsWithVM;
             return true;
         } catch (err) {
@@ -25,13 +27,13 @@ class ManagerSettings {
                 logPath: '',
                 //sortColumn: 0,
                 //sortOrder: 'asc',
-            }
+            };
             if (!this.writeConfig()) {
                 return true;
             }
             return false;
         }
-    }
+    };
 
     writeConfig = () => {
         try {
@@ -42,7 +44,7 @@ class ManagerSettings {
             log.error('Cannot write config', err);
             return false;
         }
-    }
+    };
 
     setConfig = (config: Settings) => {
         this.settings = {
@@ -54,7 +56,7 @@ class ManagerSettings {
             return false;
         }
         return true;
-    }
+    };
 
     addVM = (vm: VM) => {
         if (!this.settings) {
@@ -67,7 +69,7 @@ class ManagerSettings {
             return false;
         }
         return true;
-    }
+    };
 }
 
 const managerSettings = new ManagerSettings();

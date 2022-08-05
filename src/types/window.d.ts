@@ -1,6 +1,5 @@
-import {ipcRenderer} from 'electron/renderer';
-
 declare global {
+    // eslint-disable-next-line no-unused-vars
     interface Window {
         mainApp: {
             setConfig: (config: Settings) => Promise<boolean>;

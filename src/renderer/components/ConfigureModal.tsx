@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Form, Modal} from 'react-bootstrap';
 
 import {Settings} from 'types/config';
 
@@ -51,8 +51,8 @@ const ConfigureModal = (props: Props) => {
             } else {
                 props.onHide();
             }
-        })
-    }
+        });
+    };
 
     useEffect(() => {
         const fetchConfig = async () => {

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Form, Modal} from 'react-bootstrap';
 
 import {Settings, VM} from 'types/config';
 
@@ -32,7 +32,7 @@ const VMModal = (props: Props) => {
             setDesc(importedVM.desc);
             setImportedVMPath(importedVM.path);
         });
-    }
+    };
 
     const saveVm = () => {
         if (saving) {
@@ -60,8 +60,8 @@ const VMModal = (props: Props) => {
                 props.onHide();
             }
             setSaving(false);
-        })
-    }
+        });
+    };
 
     useEffect(() => {
         if (!props.editVm) {
@@ -93,7 +93,7 @@ const VMModal = (props: Props) => {
             return;
         }
         setPath(window.path.join(config.cfgPath, name));
-    }, [name, config])
+    }, [name, config]);
 
     if (!config) {
         return null;
@@ -133,7 +133,7 @@ const VMModal = (props: Props) => {
                         value={path}
                     />
                 </Form.Group>
-                {importedVMPath && 
+                {importedVMPath &&
                     <>
                         <br/>
                         {`Imported VM Path: ${importedVMPath}`}
@@ -147,7 +147,7 @@ const VMModal = (props: Props) => {
                 >
                     {'Save'}
                 </Button>
-                {!props.editVm && 
+                {!props.editVm &&
                     <Button
                         onClick={importVm}
                         disabled={saving}

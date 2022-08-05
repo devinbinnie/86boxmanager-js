@@ -23,7 +23,8 @@ contextBridge.exposeInMainWorld('mainApp', {
     getConfig: () => ipcRenderer.invoke(GET_CONFIG),
     addVM: (importedVMPath?: string) => (vm: VM) => ipcRenderer.invoke(ADD_VM, vm, importedVMPath),
     editVM: (index: number) => (vm: VM) => ipcRenderer.invoke(EDIT_VM, index, vm),
-    deleteVM: (index: number, deleteFiles: boolean) => ipcRenderer.invoke(DELETE_VM, index, deleteFiles),
+    deleteVM: (index: number, deleteFiles: boolean) =>
+        ipcRenderer.invoke(DELETE_VM, index, deleteFiles),
     getVMs: () => ipcRenderer.invoke(GET_VMS),
     configureVM: (vm: VM) => ipcRenderer.invoke(CONFIGURE_VM, vm),
     startVM: (vm: VM) => ipcRenderer.invoke(START_VM, vm),

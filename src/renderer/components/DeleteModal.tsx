@@ -37,7 +37,7 @@ const DeleteModal = (props: Props) => {
             }
             setSaving(false);
         });
-    }
+    };
     return (
         <Modal
             show={props.show}

@@ -45,16 +45,16 @@ const Root = () => {
     const editVM = (index: number, vm: VM) => {
         setEditVm({...vm, index});
         setIsAddModalOpen(true);
-    }
+    };
 
-    const deleteVM  = (index: number, vm: VM) => {
+    const deleteVM = (index: number, vm: VM) => {
         setDeleteVm({...vm, index});
         setIsDeleteModalOpen(true);
-    }
+    };
 
     const renderVMs = () => {
         return vms.map((vm, index) => (
-            <Card>
+            <Card key={index}>
                 <Card.Header>
                     {vm.name}
                 </Card.Header>
@@ -90,7 +90,7 @@ const Root = () => {
                 </Card.Footer>
             </Card>
         ));
-    }
+    };
 
     useEffect(() => {
         getVMs();
@@ -128,7 +128,7 @@ const Root = () => {
                 }}
             />
         </>
-    )
+    );
 };
 
 ReactDOM.render(
