@@ -18,6 +18,8 @@ import {
     DELETE_VM,
     IMPORT_VM,
     VERIFY_86BOX_EXE,
+    UPDATE_VM_STATUSES,
+    VMStatus,
 } from 'main/constants';
 
 import {Settings, VM} from 'types/config';
@@ -41,7 +43,25 @@ app.whenReady().then(() => {
 
     const window = createWindow();
 
+    const vmStatuses: Map<string, VMStatus> = new Map();
+
+    const setVMStatus = (path: string, status: VMStatus) => {
+        vmStatuses.set(path, status);
+        window.webContents.send(UPDATE_VM_STATUSES, vmStatuses);
+    };
+
+    if (ManagerSettings.settings?.vms) {
+        for (const vm of ManagerSettings.settings?.vms) {
+            if (!fs.existsSync(path.join(vm.path, '86box.cfg'))) {
+                setVMStatus(vm.path, VMStatus.NotConfigured);
+            } else {
+                setVMStatus(vm.path, VMStatus.Ready);
+            }
+        }
+    }
+
     ipcMain.handle(GET_CONFIG, () => {
+        window.webContents.send(UPDATE_VM_STATUSES, vmStatuses);
         return ManagerSettings.settings;
     });
 
@@ -57,13 +77,15 @@ app.whenReady().then(() => {
             fs.copyFileSync(importedVMPath, path.join(vm.path, '86box.cfg'));
         }
 
+        if (!fs.existsSync(path.join(vm.path, '86box.cfg'))) {
+            setVMStatus(vm.path, VMStatus.NotConfigured);
+        } else {
+            setVMStatus(vm.path, VMStatus.Ready);
+        }
         return ManagerSettings.addVM(vm);
     });
 
     ipcMain.handle(EDIT_VM, (event: IpcMainInvokeEvent, index: number, vm: VM) => {
-        const originalPath = ManagerSettings.settings?.vms[index].path;
-        vm.path = path.join(ManagerSettings.settings?.cfgPath!, vm.name);
-        //fs.renameSync(originalPath!, vm.path);
         ManagerSettings.settings?.vms.splice(index, 1, vm);
         return ManagerSettings.writeConfig();
     });
@@ -103,7 +125,13 @@ app.whenReady().then(() => {
     });
 
     ipcMain.handle(CONFIGURE_VM, (event: IpcMainInvokeEvent, vm: VM) => {
-        configure86Box(ManagerSettings.settings?.exePath!, vm.path);
+        const instance = configure86Box(ManagerSettings.settings?.exePath!, vm.path);
+        setVMStatus(vm.path, VMStatus.Configuring);
+        instance.on('close', () => {
+            if (fs.existsSync(path.join(vm.path, '86box.cfg'))) {
+                setVMStatus(vm.path, VMStatus.Ready);
+            }
+        });
         return true;
     });
 
@@ -116,7 +144,13 @@ app.whenReady().then(() => {
             alert('EXE is not valid');
             return false;
         }
-        start86Box(ManagerSettings.settings?.exePath!, vm.path);
+        const instance = start86Box(ManagerSettings.settings?.exePath!, vm.path);
+        setVMStatus(vm.path, VMStatus.Running);
+        instance.on('close', () => {
+            if (fs.existsSync(path.join(vm.path, '86box.cfg'))) {
+                setVMStatus(vm.path, VMStatus.Ready);
+            }
+        });
         return true;
     });
 

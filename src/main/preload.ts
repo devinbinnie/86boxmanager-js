@@ -15,6 +15,8 @@ import {
     START_VM,
     IMPORT_VM,
     VERIFY_86BOX_EXE,
+    UPDATE_VM_STATUSES,
+    VMStatus,
 } from 'main/constants';
 
 import {Settings, VM} from 'types/config';
@@ -33,6 +35,10 @@ contextBridge.exposeInMainWorld('mainApp', {
     openExePathDialog: () => ipcRenderer.invoke(OPEN_EXE_PATH_DIALOG),
     openCfgPathDialog: () => ipcRenderer.invoke(OPEN_CFG_PATH_DIALOG),
     verify86Box: (exePath: string) => ipcRenderer.invoke(VERIFY_86BOX_EXE, exePath),
+
+    registerUpdateVMStatusesListener:
+        (func: (event: Electron.IpcRendererEvent, vms: Map<string, VMStatus>) => void) =>
+            ipcRenderer.on(UPDATE_VM_STATUSES, func),
 });
 
 contextBridge.exposeInMainWorld('path', {

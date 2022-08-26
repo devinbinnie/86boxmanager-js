@@ -16,6 +16,9 @@ declare global {
             getVMs: () => Promise<VM[]>;
             importVM: () => Promise<VM>;
             verify86Box: (exePath: string) => Promise<boolean>;
+            registerUpdateVMStatusesListener:
+                (func: (event: Electron.IpcRendererEvent, vms: Map<string, number>) => void) =>
+                void;
         },
         path: {
             join: (...paths: string[]) => string;

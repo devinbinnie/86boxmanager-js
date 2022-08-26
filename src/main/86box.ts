@@ -1,18 +1,15 @@
 import fs from 'fs';
-import {execFileSync, spawn} from 'child_process';
+import {execFile, spawn} from 'child_process';
 import path from 'path';
 
 import log from 'electron-log';
 
 export function configure86Box(exePath: string, vmPath: string) {
-    execFileSync(get86BoxCommand(exePath), ['--settings', '--vmpath', vmPath]);
+    return execFile(get86BoxCommand(exePath), ['--settings', '--vmpath', vmPath]);
 }
 
 export function start86Box(exePath: string, vmPath: string) {
-    if (!fs.existsSync(exePath)) {
-        return false;
-    }
-    execFileSync(get86BoxCommand(exePath), ['--vmpath', vmPath]);
+    return execFile(get86BoxCommand(exePath), ['--vmpath', vmPath]);
 }
 
 export async function verify86Box(exePath: string): Promise<boolean> {
