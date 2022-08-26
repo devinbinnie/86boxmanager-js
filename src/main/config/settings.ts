@@ -47,7 +47,7 @@ class ManagerSettings {
 
     setConfig = (config: Settings) => {
         this.settings = {
-            vms: [],
+            vms: this.settings?.vms ?? [],
             ...this.settings,
             ...config,
         };

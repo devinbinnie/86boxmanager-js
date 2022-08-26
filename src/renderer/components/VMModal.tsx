@@ -22,12 +22,20 @@ const VMModal = (props: Props) => {
     const [importedVMPath, setImportedVMPath] = useState('');
     const [saving, setSaving] = useState(false);
 
+    const isValid = () => {
+        return name && path;
+    };
+
     const importVm = () => {
         if (saving) {
             return;
         }
 
         window.mainApp.importVM().then((importedVM) => {
+            if (!importedVM) {
+                return;
+            }
+
             setName(importedVM.name);
             setDesc(importedVM.desc);
             setImportedVMPath(importedVM.path);
@@ -92,6 +100,9 @@ const VMModal = (props: Props) => {
         if (!config) {
             return;
         }
+        if (props.editVm) {
+            return;
+        }
         setPath(window.path.join(config.cfgPath, name));
     }, [name, config]);
 
@@ -141,21 +152,21 @@ const VMModal = (props: Props) => {
                 }
             </Modal.Body>
             <Modal.Footer>
-                <Button
-                    onClick={saveVm}
-                    disabled={saving}
-                >
-                    {'Save'}
-                </Button>
                 {!props.editVm &&
                     <Button
                         onClick={importVm}
                         disabled={saving}
-                        variant='success'
+                        variant='secondary'
                     >
                         {'Import'}
                     </Button>
                 }
+                <Button
+                    onClick={saveVm}
+                    disabled={saving || !isValid()}
+                >
+                    {'Save'}
+                </Button>
             </Modal.Footer>
         </Modal>
     );

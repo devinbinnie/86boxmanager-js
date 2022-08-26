@@ -63,7 +63,7 @@ app.whenReady().then(() => {
     ipcMain.handle(EDIT_VM, (event: IpcMainInvokeEvent, index: number, vm: VM) => {
         const originalPath = ManagerSettings.settings?.vms[index].path;
         vm.path = path.join(ManagerSettings.settings?.cfgPath!, vm.name);
-        fs.renameSync(originalPath!, vm.path);
+        //fs.renameSync(originalPath!, vm.path);
         ManagerSettings.settings?.vms.splice(index, 1, vm);
         return ManagerSettings.writeConfig();
     });
@@ -88,7 +88,7 @@ app.whenReady().then(() => {
             ],
         });
         if (!importPath) {
-            return '';
+            return null;
         }
         const directory = path.dirname(importPath[0]);
         return {

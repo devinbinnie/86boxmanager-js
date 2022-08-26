@@ -18,6 +18,15 @@ const ConfigureModal = (props: Props) => {
     const [config, setConfig] = useState<Settings | undefined>();
     const [saving, setSaving] = useState(false);
     const [isValidExe, setIsValidExe] = useState<number>(ValidExe.Checking);
+    const [configExists, setConfigExists] = useState(false);
+
+    const onHide = () => {
+        if (!configExists) {
+            return;
+        }
+
+        props.onHide();
+    };
 
     const openExePathDialog = () => {
         if (!config) {
@@ -59,6 +68,7 @@ const ConfigureModal = (props: Props) => {
 
         setSaving(true);
         window.mainApp.setConfig(config).then((result) => {
+            setSaving(false);
             if (!result) {
                 alert('Something went wrong saving the config');
             } else {
@@ -106,6 +116,12 @@ const ConfigureModal = (props: Props) => {
         }
     }, [config]);
 
+    useEffect(() => {
+        if (config?.exePath) {
+            setConfigExists(true);
+        }
+    }, [props.show]);
+
     if (!config) {
         return null;
     }
@@ -113,7 +129,7 @@ const ConfigureModal = (props: Props) => {
     return (
         <Modal
             show={props.show}
-            onHide={props.onHide}
+            onHide={onHide}
         >
             <Modal.Header>
                 {'Configure Modal'}
@@ -138,7 +154,7 @@ const ConfigureModal = (props: Props) => {
                 </Form.Group>
                 <Button
                     onClick={saveConfig}
-                    disabled={saving || isValidExe}
+                    disabled={saving || isValidExe !== ValidExe.Valid}
                 >
                     {'Save'}
                 </Button>

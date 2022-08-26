@@ -94,6 +94,13 @@ const Root = () => {
 
     useEffect(() => {
         getVMs();
+        const fetchConfig = async () => {
+            const fetchedConfig = await window.mainApp.getConfig();
+            if (!fetchedConfig.exePath) {
+                setIsConfigureModalOpen(true);
+            }
+        };
+        fetchConfig();
     }, []);
 
     return (
