@@ -1,6 +1,6 @@
 {
   "name": "86boxmanager-js",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0",
   "description": "An Electron-based configuration manager for the 86Box emulator",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,9 @@
         "to": ".",
         "filter": "**/*"
       }
-    ]
+    "directories": {
+      "output": "release"
+    }
   },
   "config": {
     "target": "19.0.6",
