@@ -24,6 +24,7 @@
         "to": ".",
         "filter": "**/*"
       }
+    ],
     "directories": {
       "output": "release"
     }
