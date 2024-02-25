@@ -25,6 +25,9 @@
         "filter": "**/*"
       }
     ],
+    "win": {
+      "verifyUpdateCodeSignature": false
+    },
     "directories": {
       "output": "release"
     }
